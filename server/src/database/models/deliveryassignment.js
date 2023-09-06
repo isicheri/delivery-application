@@ -11,6 +11,11 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      DeliveryAssignment.belongsTo(models.Order, { foreignKey: 'orderId', as: 'order' });
+      DeliveryAssignment.belongsTo(models.Driver,{
+        foreignKey: 'driverId',
+        as: 'driver'
+      })
     }
   }
   DeliveryAssignment.init({

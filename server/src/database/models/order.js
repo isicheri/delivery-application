@@ -15,6 +15,12 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "userId",
         as: "User" // Use the correct alias
       })
+      Order.hasMany(models.OrderItems, 
+        { foreignKey: 'orderId', 
+        as: 'orderItems' // use the correct alias
+       });
+       Order.belongsTo(models.Driver, { foreignKey: 'driverId', as: 'driver' });
+       Order.hasOne(models.DeliveryAssignment, { foreignKey: 'orderId', as: 'deliveryAssignment' });
     }
   }
   Order.init({

@@ -24,6 +24,9 @@ module.exports = {
       vehiclecType: {
         type: Sequelize.STRING
       },
+      orderId: {
+        type: DataTypes.INTEGER
+        },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE

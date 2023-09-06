@@ -11,6 +11,11 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      Driver.hasMany(models.Order, { foreignKey: 'driverId', as: 'orders' });
+      Driver.hasMany(models.DeliveryAssignment, {
+        foreignKey: 'driverId',
+        as: 'delivetAssignment'
+      })
     }
   }
   Driver.init({
@@ -18,7 +23,10 @@ module.exports = (sequelize, DataTypes) => {
     lastName: DataTypes.STRING,
     phone: DataTypes.STRING,
     vehicleplateNumber: DataTypes.STRING,
-    vehiclecType: DataTypes.STRING
+    vehiclecType: DataTypes.STRING,
+    orderId: {
+    type: DataTypes.INTEGER
+    }
   }, {
     sequelize,
     modelName: 'Driver',
