@@ -15,6 +15,10 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "userId",
         as: "Orders" // Use the correct alias
       })
+      User.hasMany(models.Otp,{
+        foreignKey: 'userId',
+        as: 'otp'
+      })
     }
   }
   User.init({
@@ -24,7 +28,7 @@ module.exports = (sequelize, DataTypes) => {
     password: {type:DataTypes.STRING,allowNull:false},
     phone: {type:DataTypes.STRING,allowNull:false},
     isVerified: {type: DataTypes.BOOLEAN,defaultValue: false},
-    userType: {type:DataTypes.ENUM("user","admin","super-admin"),defaultValue: "users"},
+    userType: {type:DataTypes.ENUM("user","admin","super-admin"),defaultValue: "user"},
     status: {type: DataTypes.ENUM("active","blocked","inactive"),defaultValue: "inactive"}
   }, {
     sequelize,
