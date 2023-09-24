@@ -1,5 +1,5 @@
 import { body } from "express-validator";
-import {existingEmail,passwordValidation,existingPhoneNumber} from "../services/validation"
+import {existingEmail,passwordValidation,existingPhoneNumber,checkAllowedFields} from "../services/validation"
 
 export const signupValidator = [
     body('email')
@@ -45,3 +45,5 @@ export const signupValidator = [
         .custom(body => checkAllowedFields(body, ['email', 'password', 
         'firstName', 'lastName', 'phone', 'confirmPassword']))
 ]
+
+export const otpValidator = []

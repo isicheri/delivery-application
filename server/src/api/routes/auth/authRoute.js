@@ -1,11 +1,12 @@
 import express from "express";
-import { createUser, getUsers } from "../../../controller/auth/authController";
+import { createUser, getUsers, verifyOtp } from "../../../controller/auth/authController";
 import { validationHandler } from "../../../services/validation";
 import { signupValidator } from "../../../middleware/validator";
 
 const router = express.Router();
 
 router.post('/create',validationHandler(signupValidator),createUser)
+router.post('/verify-otp/:id',verifyOtp)
 router.route("/").get(getUsers);
 module.exports = router;
 

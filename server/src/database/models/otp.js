@@ -19,7 +19,11 @@ module.exports = (sequelize, DataTypes) => {
   }
   Otp.init({
     otp: DataTypes.STRING,
-    userId: DataTypes.INTEGER
+    userId: DataTypes.INTEGER,
+    expiresAt:{
+       type: DataTypes.STRING,
+       defaultValue: ''
+    }
   }, {
     sequelize,
     modelName: 'Otp',
