@@ -46,4 +46,30 @@ export const signupValidator = [
         'firstName', 'lastName', 'phone', 'confirmPassword']))
 ]
 
-export const otpValidator = []
+export const otpValidator = [
+    body('otp')
+    .exists()
+    .withMessage('otp is required')
+    .isLength({max: 6})
+    .withMessage('otp must not be more than 6 characters'),
+    body()
+    .custom(body => checkAllowedFields(body,['otp']))
+]
+
+export const loginValidator =  [
+    body('email')
+        .exists()
+        .withMessage("Email is required")
+        .isEmail()
+        .withMessage("Please enter a valid Email")
+        .custom(checkEmailExist)
+        .normalizeEmail(),
+    body('password')
+        .notEmpty()
+        .withMessage("Password is required")
+        .isLength({min: 8})
+        .withMessage("Password must be more than 8 characters"),
+    body()
+    .custom(checkPasswordCorrect)
+    .custom(body => checkAllowedFields(body, ['email', 'password']))
+];

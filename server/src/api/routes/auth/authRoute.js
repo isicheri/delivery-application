@@ -1,12 +1,14 @@
 import express from "express";
-import { createUser, getUsers, verifyOtp } from "../../../controller/auth/authController";
+import { createUser, getUsers, loginUser, requestOtp, verifyOtp } from "../../../controller/auth/authController";
 import { validationHandler } from "../../../services/validation";
-import { signupValidator } from "../../../middleware/validator";
+import { loginValidator, otpValidator, signupValidator } from "../../../middleware/validator";
 
 const router = express.Router();
 
 router.post('/create',validationHandler(signupValidator),createUser)
-router.post('/verify-otp/:id',verifyOtp)
+router.post('/verify-otp/:id',validationHandler(otpValidator),verifyOtp)
+router.get('/request-new-otp/:id',requestOtp)
+router.post('/login-user',validationHandler(loginValidator),loginUser)
 router.route("/").get(getUsers);
 module.exports = router;
 

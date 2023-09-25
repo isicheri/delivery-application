@@ -4,9 +4,16 @@ import { errorHandler } from "../../middleware/ErrorHandler";
 import { sendMail } from "../../services/sendMail";
 import { responseHandler } from "../../services/responseHandler";
 import { generateNewOtp } from "../../helper/generateNewOtp";
+import { generateAccessToken,generateRefreshToken } from "../../helper/generateToken";
 
 
-
+/**
+ * 
+ * @param {*} req 
+ * @param {*} res 
+ * @returns 
+ * user authentication and authorization
+ */
 //register user to the system
 export const createUser = async(req,res) => {
     try {
@@ -118,7 +125,7 @@ export const verifyOtp = async(req,res) => {
     // res.status(200).json(user)
 
     } catch (error) {
-        throw error
+      return responseHandler(res,500,false,'Something went wrong, try again later',err.stack);
     }
 }
 
@@ -137,6 +144,35 @@ export const requestOtp = async(req,res) => {
 }
 
 
+export const loginUser = async(req,res) => {
+  try {
+    const { email } = req.body;
+    const user = await Model.User.findOne({
+      where: { email: email },
+      attributes: { exclude: ['password'] },
+    });
+    if (user.isVerified) {
+      // generate tokens
+      // const accessToken = generateAccessToken(user);
+      const refreshToken = generateRefreshToken(user);
+      responseHandler(res, 200, true, 'login successful', {user,accessToken,refreshToken});
+    } else {
+      responseHandler(res, 500, false, 'user is not yet verified', null);
+    }
+  } catch (error) {
+    await errorHandler(err);
+    return responseHandler(res,500,false,'Something went wrong, try again later',err.stack);
+  }
+}
+
+
+/**
+ * 
+ * @param {*} req 
+ * @param {*} res 
+ * @returns 
+ * driver authentication and authorization
+ */
 //change valu to human readable date and time
 /**
  * const timestamp = 1693624717497; // Replace this with your timestamp
