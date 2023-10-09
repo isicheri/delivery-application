@@ -217,3 +217,7 @@ const dateString = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 
 console.log(dateString);
  */
+
+export const createDriver = (req,res) => {}
+
+export const loginDriver = (req,res) => {}
