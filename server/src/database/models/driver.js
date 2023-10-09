@@ -25,7 +25,7 @@ module.exports = (sequelize, DataTypes) => {
     vehicleplateNumber: DataTypes.STRING,
     vehiclecType: DataTypes.STRING,
     orderId: {
-    type: DataTypes.INTEGER
+    type: DataTypes.INTEGER,
     }
   }, {
     sequelize,

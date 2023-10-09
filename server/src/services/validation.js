@@ -1,6 +1,7 @@
 import { validationResult } from "express-validator";
 import { responseHandler } from "./responseHandler";
 import Model from '../database/models'
+import { decryptData } from "../helper/bcrypt";
 
 
 export const existingEmail = async(email) => {
@@ -60,7 +61,7 @@ export const checkEmailExist = async(email) => {
 export const checkPasswordCorrect = async(body) => {
     const {email,password} = body;
     const user = await Model.User.findOne({where:{email:email}});
-    const comparedPassword = await bcrypt.compare(password,user.password)
+    const comparedPassword = await decryptData(password,user.password)
     if (!comparedPassword) {
         throw new Error("Password is incorrect");
     }

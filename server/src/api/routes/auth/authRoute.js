@@ -1,7 +1,9 @@
 import express from "express";
-import { createUser, getUsers, loginUser, requestOtp, verifyOtp } from "../../../controller/auth/authController";
+import { createUser, getUsers, loginUser, requestOtp, userDeleteAccount, verifyOtp } from "../../../controller/auth/authController";
 import { validationHandler } from "../../../services/validation";
 import { loginValidator, otpValidator, signupValidator } from "../../../middleware/validator";
+import { verifyToken } from "../../../controller/validators/authValidator";
+import { generateNewAccessToken } from "../../../helper/generateNewAcessToken";
 
 const router = express.Router();
 
@@ -9,6 +11,8 @@ router.post('/create',validationHandler(signupValidator),createUser)
 router.post('/verify-otp/:id',validationHandler(otpValidator),verifyOtp)
 router.get('/request-new-otp/:id',requestOtp)
 router.post('/login-user',validationHandler(loginValidator),loginUser)
+router.delete('/delete-account/:id',verifyToken,userDeleteAccount)
+router.post('/request-new-token/:id',generateNewAccessToken)
 router.route("/").get(getUsers);
 module.exports = router;
 

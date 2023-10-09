@@ -124,8 +124,9 @@ export const verifyOtp = async(req,res) => {
 
     // res.status(200).json(user)
 
-    } catch (error) {
-      return responseHandler(res,500,false,'Something went wrong, try again later',err.stack);
+  } catch (error) {
+        await errorHandler(error);
+      return responseHandler(res,500,false,'Something went wrong, try again later',error.stack);
     }
 }
 
@@ -138,8 +139,8 @@ export const requestOtp = async(req,res) => {
         // await generateNewOtp(id,user.email,Model,res);
         await generateNewOtp(id,user.email,Model,res)
       } catch (error) {
-        await errorHandler(err);
-          return responseHandler(res,500,false,'Something went wrong, try again later',err.stack);
+        await errorHandler(error);
+          return responseHandler(res,500,false,'Something went wrong, try again later',error.stack);
       }
 }
 
@@ -153,15 +154,38 @@ export const loginUser = async(req,res) => {
     });
     if (user.isVerified) {
       // generate tokens
-      // const accessToken = generateAccessToken(user);
+      const accessToken = generateAccessToken(user);
       const refreshToken = generateRefreshToken(user);
-      responseHandler(res, 200, true, 'login successful', {user,accessToken,refreshToken});
+      res.cookie('jwt',refreshToken,{
+            httpOnly: true,  
+            sameSite: 'None',
+            secure: true,  
+            maxAge: 24 * 60 * 60 * 1000 
+      })
+      responseHandler(res, 200, true, 'login successful', {user,accessToken});
     } else {
       responseHandler(res, 500, false, 'user is not yet verified', null);
     }
   } catch (error) {
-    await errorHandler(err);
-    return responseHandler(res,500,false,'Something went wrong, try again later',err.stack);
+    await errorHandler(error);
+    return responseHandler(res,500,false,'Something went wrong, try again later',error.stack);
+  }
+}
+
+
+
+//this is just a simple implementation of a delete operation
+export const userDeleteAccount = async(req,res) => {
+  try {
+    await Model.User.destroy({
+      where: {
+        id: req.params.id
+      }
+    })
+    responseHandler(res, 200, false, 'user deleted success', null);
+  } catch (error) {
+    await errorHandler(error);
+    return responseHandler(res,500,false,'Something went wrong, try again later',error.stack)
   }
 }
 

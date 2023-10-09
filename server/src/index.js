@@ -1,6 +1,7 @@
 import dotenv from "dotenv";
 dotenv.config()
-import  express from "express";
+import  express from "express"
+import cookieparser from 'cookie-parser'
 import AuthRouter from "./api/routes/auth/authRoute"
 import { ErrorHandler,AppError } from "./middleware/ErrorHandler";
 const app = express();
@@ -10,6 +11,7 @@ app.get("/",(req,res) => {
 })
 
 app.use(express.json())
+app.use(cookieparser())
 app.use("/api/v1/auth",AuthRouter)
 
 app.all('*',(req,res,next) => {
