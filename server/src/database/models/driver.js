@@ -16,6 +16,7 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: 'driverId',
         as: 'delivetAssignment'
       })
+      Driver.hasMany(models.DriverOtp,{foreignKey:'driverId',as: 'otp'})
     }
   }
   Driver.init({

@@ -9,12 +9,12 @@ module.exports = {
      * Example:
      * await queryInterface.createTable('users', { id: Sequelize.INTEGER });
      */
-    await queryInterface.addConstraint('Otps',{
-      fields:['userId'],
+    await queryInterface.addConstraint('DriverOtps',{
+      fields:['driverId'],
       type: 'foreign key',
-      name: 'user-otp-association',
+      name: 'driver-driverOtp-association',
       references: {
-        table: 'Users',
+        table: 'Drivers',
         field: 'id'
       },
       onDelete: 'cascade',
@@ -29,7 +29,6 @@ module.exports = {
      * Example:
      * await queryInterface.dropTable('users');
      */
-   await queryInterface.removeConstraint('Otps','user-otp-association')
-
+   await queryInterface.removeConstraint('DriverOtps','driver-driverOtp-association')
   }
 };
