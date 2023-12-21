@@ -1,5 +1,5 @@
 import { body } from "express-validator";
-import {existingEmail,passwordValidation,existingPhoneNumber,checkAllowedFields,checkEmailExist,checkPasswordCorrect} from "../services/validation"
+import {existingEmail,passwordValidation,existingPhoneNumber,checkAllowedFields,checkEmailExist,checkPasswordCorrect, existingDriverPhoneNumber} from "../services/validation"
 
 export const signupValidator = [
     body('email')
@@ -73,3 +73,17 @@ export const loginValidator =  [
     .custom(checkPasswordCorrect)
     .custom(body => checkAllowedFields(body, ['email', 'password']))
 ];
+
+export const driverSignupValidator = [
+    body('phone')
+    .trim()
+    .exists()
+    .withMessage("Phone Number is required")
+    .notEmpty()
+    .withMessage("Please provide your Phone Number")
+    .isLength({min: 11, max: 11})
+    .withMessage("Phone Number must be 11 digits")
+    .custom(existingDriverPhoneNumber),
+    body()
+    .custom(body => checkAllowedFields(body,['firstName','lastName','phone','vehicleplateNumber','vehiclecType']))
+]

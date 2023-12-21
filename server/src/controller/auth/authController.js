@@ -5,7 +5,9 @@ import { sendMail } from "../../services/sendMail";
 import { responseHandler } from "../../services/responseHandler";
 import { generateNewOtp } from "../../helper/generateNewOtp";
 import { generateAccessToken,generateRefreshToken } from "../../helper/generateToken";
+import twilio from 'twilio'
 
+const client = twilio(process.env.accountSid,process.env.authToken)
 
 /**
  * 
@@ -218,6 +220,72 @@ const dateString = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 console.log(dateString);
  */
 
-export const createDriver = (req,res) => {}
+export const createDriver = async(req,res) => {
+  try {
+    const trans = await sequelize.transaction();
+    const {firstName,lastName,phone,vehicleplateNumber,vehiclecType} = req.body;
+    const driver  = await Model.Driver.create({firstName,lastName,phone,vehicleplateNumber,vehiclecType},{transaction: trans})
+      
+    const otp = Math.floor(1 + Math.random() * 928201).toString();
+    const hashedOtp = await hashData(otp)
+    
+    await Model.Otp.create({otp: hashedOtp,driverId: driver.id,expiresAt: Date.now() + 30 * (60 * 1000)},
+      { transaction: trans }
+    );
 
-export const loginDriver = (req,res) => {}
+  const message = await  client.messages.create({
+      body: otp,
+      to: driver.phone,
+      from: process.env.twilioPhoneNum
+    })
+
+    console.log(message);
+
+    await trans.commit()
+    return responseHandler(res,201,true,'User created successfully! check email your phone',null);
+
+  } catch (error) {
+    await errorHandler(error)
+    res.status(400).json(error)
+  }
+}
+
+// export const verifyDriverOtp = async(req,res) => {
+//   try {
+//     const {id} = req.params
+//     const {otp} = req.body
+//     const data = await Model.Driver.findOne({
+//       where: {
+//           id: id
+//       },
+//       include: [
+//           {
+//           model:Model.DriverOtp,
+//           as: 'otp' // Use the correct alias
+//           }
+//       ]
+//   })
+
+  
+//   } catch (error) {
+    
+//   }
+// }
+
+
+
+// export const loginDriver = async(req,res) => {
+//   try {
+//     const {phone} = req.body;
+//     const driver = Model.Driver.findOne({
+//       where: {
+//         phone:phone
+//       }
+//     })
+
+    
+
+//   } catch (error) {
+    
+//   }
+// }

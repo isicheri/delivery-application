@@ -94,3 +94,11 @@ export const validationHandler = (values = []) => {
         responseHandler(res, 422, false, {errors: errors.array() });
     }
 }
+
+export const existingDriverPhoneNumber = async(phone) => {
+    const check_existing_phone_number = await Model.Driver.findOne({ where: { phone }});
+    if(check_existing_phone_number){
+        throw new Error("Phone Number already exist");
+    }
+    return true;
+}

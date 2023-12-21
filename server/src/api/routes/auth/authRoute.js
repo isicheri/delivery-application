@@ -1,7 +1,7 @@
 import express from "express";
-import { createUser, getUsers, loginUser, requestOtp, userDeleteAccount, verifyOtp } from "../../../controller/auth/authController";
+import { createDriver, createUser, getUsers, loginUser, requestOtp, userDeleteAccount, verifyOtp } from "../../../controller/auth/authController";
 import { validationHandler } from "../../../services/validation";
-import { loginValidator, otpValidator, signupValidator } from "../../../middleware/validator";
+import { driverSignupValidator, loginValidator, otpValidator, signupValidator } from "../../../middleware/validator";
 import { verifyToken } from "../../../controller/validators/authValidator";
 import { generateNewAccessToken } from "../../../helper/generateNewAcessToken";
 
@@ -13,6 +13,15 @@ router.get('/request-new-otp/:id',requestOtp)
 router.post('/login-user',validationHandler(loginValidator),loginUser)
 router.delete('/delete-account/:id',verifyToken,userDeleteAccount)
 router.post('/request-new-token/:id',generateNewAccessToken)
+
+/**
+ * driver authentication route lol
+ */
+
+router.post('/create-driver-account',validationHandler(driverSignupValidator),createDriver)
+
+
+
 router.route("/").get(getUsers);
 module.exports = router;
 
