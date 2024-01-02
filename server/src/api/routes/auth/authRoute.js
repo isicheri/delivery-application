@@ -1,7 +1,7 @@
 import express from "express";
-import { createDriver, createUser, getUsers, loginUser, requestOtp, userDeleteAccount, verifyOtp } from "../../../controller/auth/authController";
+import { createDriver, createUser, getUsers, loginUser, requestOtp, userDeleteAccount, verifyDriverOtp, verifyOtp } from "../../../controller/auth/authController";
 import { validationHandler } from "../../../services/validation";
-import { driverSignupValidator, loginValidator, otpValidator, signupValidator } from "../../../middleware/validator";
+import { driverSignupValidator, loginValidator, otpValidator, signupValidator,driverOtpValidator } from "../../../middleware/validator";
 import { verifyToken } from "../../../controller/validators/authValidator";
 import { generateNewAccessToken } from "../../../helper/generateNewAcessToken";
 
@@ -19,7 +19,7 @@ router.post('/request-new-token/:id',generateNewAccessToken)
  */
 
 router.post('/create-driver-account',validationHandler(driverSignupValidator),createDriver)
-
+router.post('/verify-driver-otp/:id',validationHandler(driverOtpValidator),verifyDriverOtp)
 
 
 router.route("/").get(getUsers);

@@ -18,6 +18,15 @@ module.exports = {
       phone: {
         type: Sequelize.STRING
       },
+      email: {
+        type: Sequelize.STRING,
+       allowNull:false,
+       unique: true
+      },
+      isVerified: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: false
+      },
       vehicleplateNumber: {
         type: Sequelize.STRING
       },

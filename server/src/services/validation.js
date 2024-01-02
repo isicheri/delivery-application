@@ -102,3 +102,12 @@ export const existingDriverPhoneNumber = async(phone) => {
     }
     return true;
 }
+
+export const existingDriverEmail = async(email) => {
+    const check_existing_email = await Model.Driver.findOne({where: {email}});
+    if(check_existing_email) {
+        throw new Error("email already exist");
+    }
+    return true
+}
+

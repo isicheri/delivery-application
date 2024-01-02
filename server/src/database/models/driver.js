@@ -23,6 +23,8 @@ module.exports = (sequelize, DataTypes) => {
     firstName: DataTypes.STRING,
     lastName: DataTypes.STRING,
     phone: DataTypes.STRING,
+    email: {type: DataTypes.STRING,allowNull: false, unique: true},
+    isVerified: {type:DataTypes.BOOLEAN,defaultValue: false},
     vehicleplateNumber: DataTypes.STRING,
     vehiclecType: DataTypes.STRING,
     orderId: {

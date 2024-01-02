@@ -5,6 +5,7 @@ import { sendMail } from "../../services/sendMail";
 import { responseHandler } from "../../services/responseHandler";
 import { generateNewOtp } from "../../helper/generateNewOtp";
 import { generateAccessToken,generateRefreshToken } from "../../helper/generateToken";
+import axios from "axios"
 import twilio from 'twilio'
 
 const client = twilio(process.env.accountSid,process.env.authToken)
@@ -223,26 +224,24 @@ console.log(dateString);
 export const createDriver = async(req,res) => {
   try {
     const trans = await sequelize.transaction();
-    const {firstName,lastName,phone,vehicleplateNumber,vehiclecType} = req.body;
-    const driver  = await Model.Driver.create({firstName,lastName,phone,vehicleplateNumber,vehiclecType},{transaction: trans})
+    const {firstName,lastName,phone,email,vehicleplateNumber,vehiclecType} = req.body;
+    const driver  = await Model.Driver.create({firstName,lastName,phone,email,vehicleplateNumber,vehiclecType},{transaction: trans})
       
     const otp = Math.floor(1 + Math.random() * 928201).toString();
     const hashedOtp = await hashData(otp)
     
-    await Model.Otp.create({otp: hashedOtp,driverId: driver.id,expiresAt: Date.now() + 30 * (60 * 1000)},
+    await Model.DriverOtp.create({otp: hashedOtp,driverId: driver.id,expiresAt: Date.now() + 30 * (60 * 1000)},
       { transaction: trans }
     );
 
-  const message = await  client.messages.create({
-      body: otp,
-      to: driver.phone,
-      from: process.env.twilioPhoneNum
-    })
+    const message = `Hi ${firstName}, please use the OTP code: ${otp} to verify your account`;
+    const subject = 'Verify your email';
+    const send_to = driver.email;
+    await sendMail(subject, message, send_to);
 
-    console.log(message);
 
     await trans.commit()
-    return responseHandler(res,201,true,'User created successfully! check email your phone',null);
+    return responseHandler(res,201,true,`driver's created successfully! check your phone number to otp`,null);
 
   } catch (error) {
     await errorHandler(error)
@@ -250,42 +249,65 @@ export const createDriver = async(req,res) => {
   }
 }
 
-// export const verifyDriverOtp = async(req,res) => {
-//   try {
-//     const {id} = req.params
-//     const {otp} = req.body
-//     const data = await Model.Driver.findOne({
-//       where: {
-//           id: id
-//       },
-//       include: [
-//           {
-//           model:Model.DriverOtp,
-//           as: 'otp' // Use the correct alias
-//           }
-//       ]
-//   })
+export const verifyDriverOtp = async(req,res) => {
+  try {
+    const {id} = req.params;
+    const {otp} = req.body;
 
-  
-//   } catch (error) {
-    
-//   }
-// }
+const data = await Model.Driver.findOne({
+    where: {
+        id: id
+    },
+    include: [
+        {
+        model:Model.DriverOtp,
+        as: 'otp' // Use the correct alias
+        }
+    ]
+})
 
+const currentTime = Date.now();
 
+if(!data) {
+    responseHandler(res,500,false,"request for a new otp",null)
+}else {
+    if(data.otp[0].expiresAt < currentTime) {
+        responseHandler(res,400,false,'otp already expired!.request for a new otp',null);
+        await Model.DriverOtp.destroy({
+          where: {
+            driverId: id
+          }
+        })
+      }else {
+     const decrypted =  await decryptData(otp,data.otp[0].otp);
+      if(decrypted) {
+        responseHandler(res,200,'successful',null)
+    //if the otp is the same just set the user verified state to true
+    await Model.Driver.update({ isVerified: 1 }, {
+      where: {
+        id: id
+      }
+    });
+     //after the user has been verified it would delete the otp
+     await Model.DriverOtp.destroy({
+        where: {
+          driverId: id
+        }
+      })
+      }else {
+    responseHandler(res,400,'incorrect otp passed,try again!',null)
+  }
+      }
+}
 
-// export const loginDriver = async(req,res) => {
-//   try {
-//     const {phone} = req.body;
-//     const driver = Model.Driver.findOne({
-//       where: {
-//         phone:phone
-//       }
-//     })
+// console.log(user.otp[0].otp);
 
-    
+// res.status(200).json(user)
 
-//   } catch (error) {
-    
-//   }
-// }
+} catch (error) {
+    await errorHandler(error);
+  return responseHandler(res,500,false,'Something went wrong, try again later',error.stack);
+}
+}
+
+export const loginDriver = async(req,res) => {}

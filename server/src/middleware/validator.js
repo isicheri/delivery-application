@@ -1,5 +1,5 @@
 import { body } from "express-validator";
-import {existingEmail,passwordValidation,existingPhoneNumber,checkAllowedFields,checkEmailExist,checkPasswordCorrect, existingDriverPhoneNumber} from "../services/validation"
+import {existingEmail,passwordValidation,existingPhoneNumber,checkAllowedFields,checkEmailExist,checkPasswordCorrect, existingDriverPhoneNumber,existingDriverEmail} from "../services/validation"
 
 export const signupValidator = [
     body('email')
@@ -81,9 +81,27 @@ export const driverSignupValidator = [
     .withMessage("Phone Number is required")
     .notEmpty()
     .withMessage("Please provide your Phone Number")
-    .isLength({min: 11, max: 11})
     .withMessage("Phone Number must be 11 digits")
     .custom(existingDriverPhoneNumber),
+    body('email')
+    .exists()
+    .withMessage("Email is required")
+    .isEmail()
+    .withMessage("Please enter a valid Email")
+    .custom(existingDriverEmail)
+    .normalizeEmail(),
     body()
-    .custom(body => checkAllowedFields(body,['firstName','lastName','phone','vehicleplateNumber','vehiclecType']))
+    .custom(body => checkAllowedFields(body,['firstName','lastName','phone','email','vehicleplateNumber','vehiclecType']))
+]
+
+export const driverOtpValidator = [
+    body('otp')
+    .trim()
+    .exists()
+    .withMessage('otp is required')
+    .isLength({min: 6,max: 6})
+    .withMessage('number cannot be more or less than 6 characters')
+    ,
+    body()
+    .custom(body => checkAllowedFields(body,['otp']))
 ]
