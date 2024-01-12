@@ -100,8 +100,7 @@ export const driverOtpValidator = [
     .exists()
     .withMessage('otp is required')
     .isLength({min: 6,max: 6})
-    .withMessage('number cannot be more or less than 6 characters')
-    ,
+    .withMessage('number cannot be more or less than 6 characters'),
     body()
     .custom(body => checkAllowedFields(body,['otp']))
 ]

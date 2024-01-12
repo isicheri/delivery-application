@@ -29,6 +29,10 @@ module.exports = (sequelize, DataTypes) => {
     vehiclecType: DataTypes.STRING,
     orderId: {
     type: DataTypes.INTEGER,
+    },
+    onAssignment: {
+      type: DataTypes.ENUM('assigned','waiting'),
+      defaultValue: 'waiting'
     }
   }, {
     sequelize,
