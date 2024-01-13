@@ -1,9 +1,11 @@
 import express from "express";
-import { createOrder } from "../../../controller/order/order.controller";
+import { cancelOrder, completeOrder, createOrder } from "../../../controller/order/order.controller";
 const router = express.Router();
 
 
 router.post('/create-order/:userId/:driverId',createOrder)
+router.patch('/complete-order/:status/:order',completeOrder)
+router.patch('/cancel-order/:status/:orderId',cancelOrder)
 
 
 
